@@ -11,7 +11,7 @@ const { NotImplementedError } = require('../extensions/index.js');
 // npm run test ./test/binary-search-tree.test.js
 class Node{
     constructor(data) {
-      this.value = data;
+      this.data = data;
       this.left = null;
       this.right = null;
     }
@@ -75,6 +75,7 @@ module.exports = class BinarySearchTree {
     }
   }
 
+  
   find( data) {
     return findNode(this.BSTroot, data);
     
@@ -147,17 +148,24 @@ module.exports = class BinarySearchTree {
 
 
   min() {
-    // return this.minNode().data;
+    return this.minNode().data;
 
-    if(!this.BSTroot) {
-      return
-    }
+    // if(!this.BSTroot) {
+    //   return
+    // }
 
-    let node = this.BSTroot 
-    while(node.left) {
-      node= node.left;
+    // let node = this.BSTroot 
+    // while(node.left) {
+    //   node= node.left;
+    // }
+    // return node.data
+  }
+  minNode(node = this.BSTroot) {
+    if(node.left === null) {
+      return node
+    } else {
+      return this.minNode(node.left)
     }
-    return node.data
   }
 
 

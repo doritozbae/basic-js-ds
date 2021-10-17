@@ -58,23 +58,20 @@ module.exports = class BinarySearchTree {
 
   has( data ) {
     //передаем то, что мы ищем
-    return searchWhithin(this.BSTroot, data); 
-
-    function searchWhithin(node, data) {
-      if (!node) {
-        return false; 
-      }
-      if (node.data === data) {
-        return true;
-      }
-
-      //узел есть, но зн-е не равняется искомому, если оно меньше - ищем его в левом узле, больше - в правом
-      return data < node.data ? 
-      searchWhithin(node.left, data) :
-      searchWhithin(node.right, data)
-    }
+    return (this.searchWhithin(this.BSTroot, data) != null); 
   }
+  searchWhithin(root, data) {
+    if (root === null) return null;
 
+    else if (data < root.data) {
+     return this.searchWhithin(root.left, data);
+    }
+    else if (data > root.data) {
+      return this.searchWhithin(root.right, data);
+    }
+    else 
+    return root;
+  }
   
   find( data) {
     return findNode(this.BSTroot, data);
@@ -96,69 +93,69 @@ module.exports = class BinarySearchTree {
   }
   
   remove(data) {
-    this.BSTroot = removeNode(this.BSTroot, data);
+    this.BSTroot = this.removeNode(this.BSTroot, data);
+    return this;
+  }
 
-    
-    function removeNode(node, data) {
-      if (!node) {
+ removeNode(root, data) {
+      if (!root) {
         return null;
       }
 
       //определям в какую сторону пойти, там просим удалить из поддерева искомый элемент 
       // в новое дерево положить новое значение 
-      if (data < node.data) {
-        node.left = removeNode(node.left, data);
-        return node;
+      else if (data < root.data) {
+        root.left = this.removeNode(root.left, data);
       }
-      else if (node.value < data) {
-        node.left = removeNode(node.left, data);
-        return node;
+      else if (data > root.data) {
+        root.right = this.removeNode(root.right, data);
       }
       //значение равно тому, что находится в узле, тогда проверяем:
       else {
         //если нет ни левого. ни правого потомка, то его можно удалять
-        if (!node.left && !node.right) {
-          return null;
+        if (!root.left && !root.right) {
+          root = null;
         }
 
         //если нет левого потомка, то вмещаем правое поддерево и возвращаем обновленный узел в кач-ве рез-та 
-        if(!node.left) {
-          node = node.right;
-          return node;
+        else if(!root.left) {
+          root = root.right;
         }
-        if(!node.right) {
-          node = node.left;
-          return node;
+        else if(!root.right) {
+          root = root.left;
         }
+
+        else {
+          let newNode = this.minNode(root.right);
+          root.data = newNode.data;
+          root.right = this.removeNode(root.right, newNode.data);
+        }
+
       }
 
-      //есть оба поддерева, тогда ищем минимальное в правом поддереве и начинаем с корня правого поддерева
-      let minFromRight = node.right; 
+      // //есть оба поддерева, тогда ищем минимальное в правом поддереве и начинаем с корня правого поддерева
+      // let minFromRight = root.right; 
 
-      while (minFromRight.left) {
-        //сдвигаем ук-ль пока есть элемент, как только нашли мин, то помещаем в значение удаляемого узла
-        minFromRight = minFromRight.left;
-      }
-      node.data = minFromRight.data; 
+      // while (minFromRight.left) {
+      //   //сдвигаем ук-ль пока есть элемент, как только нашли мин, то помещаем в значение удаляемого узла
+      //   minFromRight = minFromRight.left;
+      // }
+      // root.data = minFromRight.data; 
 
-      node.right = removeNode(node.right, minFromRight.data)
-      return node;
+      // root.right = removeNode(root.right, minFromRight.data)
+      return root;
     }
-  }
 
 
   min() {
-    return this.minNode().data;
-
-    // if(!this.BSTroot) {
-    //   return
-    // }
-
-    // let node = this.BSTroot 
-    // while(node.left) {
-    //   node= node.left;
-    // }
-    // return node.data
+    if(!this.BSTroot) {
+      return
+    }
+    let node = this.BSTroot 
+    while(node.left) {
+      node= node.left;
+    }
+    return node.data
   }
   minNode(node = this.BSTroot) {
     if(node.left === null) {
@@ -173,13 +170,11 @@ module.exports = class BinarySearchTree {
     if(!this.BSTroot) {
       return
     }
-
     let node = this.BSTroot 
     while(node.right) {
       node= node.right;
     }
     return node.data
-
    }
 
 }
